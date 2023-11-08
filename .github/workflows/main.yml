@@ -60,7 +60,7 @@ jobs:
 
       # - name: Login to ECR
       #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@V1
+      #   uses: aws-actions/amazon-ecr-login@V2
 
       # - name: Build, tag and push the image to AWS ECR
       #   id: build-image
@@ -89,13 +89,13 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:latest .
-          docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:latest
+          docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
+          docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
 
 
       - name: Configure CodeArtifact authentication
         run: |
-          aws codeartifact login --tool npm --repository testrunrepo --domain testrundomain
+          aws codeartifact login --tool npm --repository CODEARTIFACT_REPO --domain CODEARTIFACT_DOMAIN
 
       - name: Install dependencies from CodeArtifact
         run: npm install
