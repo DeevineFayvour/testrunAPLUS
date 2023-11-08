@@ -1,4 +1,41 @@
-name: CI/CD with AWS ECR
+# name: Deploy to ECR
+
+# on:
+ 
+#   push:
+#     branches: [ main ]
+
+# jobs:
+  
+#   build:
+    
+#     name: Build Image
+#     runs-on: ubuntu-latest
+
+   
+#     steps:
+
+#     - name: Check out code
+#       uses: actions/checkout@v2
+    
+#     - name: Configure AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: us-east-1
+
+#     - name: Login to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+
+#     - name: Build, tag, and push image to Amazon ECR
+#       run: |
+#           docker build -t your-ecr-registry-uri/your-repo-name:${{ github.sha }} .
+#           docker push your-ecr-registry-uri/your-repo-name:${{ github.sha }}
+
+
+name: CI/CD with ECR and CodeArtifact
 
 on:
   push:
@@ -6,20 +43,28 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Login to AWS ECR
-      uses: aws-actions/amazon-ecr-login@v2
-      with:
-        registry: 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun
-        region: us-east-1
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-    - name: Build and Push Docker Image
-      run: |
-        docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:${{ github.sha }} .
-        docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:${{ github.sha }}
+      - name: Build and push Docker image to ECR
+        run: |
+          docker build -t ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }} .
+          docker push ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }}
+
+      - name: Configure CodeArtifact authentication
+        run: |
+          aws codeartifact login --tool npm --repository testrunrepo --domain testrundomain
+
+      - name: Install dependencies from CodeArtifact
+        run: npm ci
