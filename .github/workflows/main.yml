@@ -64,11 +64,8 @@ jobs:
 
       - name: Build and push Docker image to ECR
         run: |
-          # docker build -t ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }} .
-          docker build -t testrun .
-          docker tag testrun:latest ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }}
-          docker push ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }}
-          # docker push ${{ secrets.ECR_REGISTRY }}/testrun:${{ github.sha }}
+          # docker build -t ${{ secrets.ECR_REGISTRY }}/testrun:latest .
+          # docker push ${{ secrets.ECR_REGISTRY }}/testrun:latest
 
       - name: Configure CodeArtifact authentication
         run: |
