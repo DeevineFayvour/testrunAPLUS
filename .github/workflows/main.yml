@@ -1,0 +1,24 @@
+name: CI/CD with AWS ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Login to AWS ECR
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registry: your-ecr-registry-uri
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:${{ github.sha }} .
+        docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:${{ github.sha }}
