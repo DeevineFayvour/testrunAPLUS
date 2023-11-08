@@ -95,7 +95,7 @@ jobs:
 
       - name: Configure CodeArtifact authentication
         run: |
-          aws codeartifact login --tool npm --repository CODEARTIFACT_REPO --domain CODEARTIFACT_DOMAIN
+          aws codeartifact login --tool npm --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
 
       - name: Install dependencies from CodeArtifact
         run: npm install
