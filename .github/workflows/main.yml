@@ -72,4 +72,4 @@ jobs:
           aws codeartifact login --tool npm --repository testrunrepo --domain testrundomain
 
       - name: Install dependencies from CodeArtifact
-        run: npm ci
+        run: npm install

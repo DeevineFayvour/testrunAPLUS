@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/DeevineFayvour/testrunAPLUS/issues"
   },
-  "homepage": "https://github.com/DeevineFayvour/testrunAPLUS#readme"
+  "homepage": "https://github.com/DeevineFayvour/testrunAPLUS#readme",
+  "keywords": [],
+  "dependencies": {
+    "package-lock.json": "^1.0.0"
+  }
 }
