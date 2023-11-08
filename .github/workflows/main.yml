@@ -56,16 +56,32 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-        
-      - name: Login to AWS ECR
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry: 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun
 
-      - name: Build and push Docker image to ECR
-        run: |
-          docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0 .
-          docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@V1
+
+      - name: Build, tag and push the image to AWS ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secret.REPO_NAME }}
+          IMAGE_TAG: latest
+        run:
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+      # - name: Login to AWS ECR
+      #   uses: aws-actions/amazon-ecr-login@v2
+      #   with:
+      #     registry: 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun
+
+      # - name: Build and push Docker image to ECR
+      #   run: |
+      #     docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0 .
+      #     docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0
 
       - name: Configure CodeArtifact authentication
         run: |
