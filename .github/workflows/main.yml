@@ -157,7 +157,7 @@ jobs:
       - name: AWS CodeArtifact login (Node.js) 
         run: |
           # aws codeartifact login --tool npm --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }}
-          aws codeartifact login --tool npm --domain testrundomain --repository for-dev
+          aws codeartifact login --tool npm --domain testrundomain --repository testrunrepo
           
 
       - name: Publish Node.js Package
