@@ -1,40 +1,72 @@
-name: CI/CD Pipeline
+# name: CI/CD Pipeline
+
+# on:
+#   pull_request:
+#     branches:
+#       - develop
+#   # push:
+#   #   branches:
+#   #     - main
+
+# jobs:
+#   build-and-publish-dev:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v2
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '14'
+
+#       - name: Install Dependencies
+#         run: npm install
+
+#       - name: Build and Test
+#         run: npm run build && npm test
+
+#       - name: Determine Target Repository
+#         id: determine-repo
+#         run: echo "::set-output name=repo::${{ 'for-dev' }}"
+
+#       - name: Bump Version for Dev
+#         run: npx standard-version --prerelease dev
+
+#       - name: Publish to CodeArtifact (Dev)
+#         run: |
+#           aws codeartifact login --tool npm --repository for-dev --domain testrundomain
+#           npm publish
+
+name: Development CI
 
 on:
   pull_request:
     branches:
       - develop
-  # push:
-  #   branches:
-  #     - main
-
+      
 jobs:
-  build-and-publish-dev:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+          # Set up AWS CLI with your CodeArtifact credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          node-version: '14'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Install Dependencies
-        run: npm install
+      # Add your build and test steps here
 
-      - name: Build and Test
-        run: npm run build && npm test
-
-      - name: Determine Target Repository
-        id: determine-repo
-        run: echo "::set-output name=repo::${{ 'for-dev' }}"
-
-      - name: Bump Version for Dev
-        run: npx standard-version --prerelease dev
-
-      - name: Publish to CodeArtifact (Dev)
+      - name: Publish to dev repository
         run: |
+          echo "Publishing artifacts to dev repository"
           aws codeartifact login --tool npm --repository for-dev --domain testrundomain
           npm publish
+          # Your code to publish artifacts to the dev repository
