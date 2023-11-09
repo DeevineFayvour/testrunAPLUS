@@ -19,7 +19,6 @@
   "homepage": "https://github.com/DeevineFayvour/testrunAPLUS#readme",
   "keywords": [],
   "dependencies": {
-    "arrify": "^3.0.0",
     "package-lock.json": "^1.0.0"
   },
   "devDependencies": {
