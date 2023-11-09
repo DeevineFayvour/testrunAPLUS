@@ -14,41 +14,41 @@ jobs:
         run: echo "PR from develop to main"
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'develop'
 
-      - name: Notify for Approval
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const { data: pullRequests } = await octokit.rest.pulls.list({
-              owner,
-              repo,
-              state: 'closed',
-              base: 'main',
-            });
+      # - name: Notify for Approval
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       const { owner, repo } = context.repo;
+      #       const { data: pullRequests } = await octokit.rest.pulls.list({
+      #         owner,
+      #         repo,
+      #         state: 'closed',
+      #         base: 'main',
+      #       });
 
-            const latestPr = pullRequests[0];
-            const prUrl = latestPr.html_url;
+      #       const latestPr = pullRequests[0];
+      #       const prUrl = latestPr.html_url;
 
-            console.log(`Please approve the promotion by reviewing the pull request: ${prUrl}`);
+      #       console.log(`Please approve the promotion by reviewing the pull request: ${prUrl}`);
       
-      - name: Wait for Approval
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { owner, repo, number } = context.issue;
-            await octokit.rest.pulls.requestReviewers({
-              owner,
-              repo,
-              pull_number: number,
-              reviewers: ['DeevineFayvour'],
-            });
+      # - name: Wait for Approval
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       const { owner, repo, number } = context.issue;
+      #       await octokit.rest.pulls.requestReviewers({
+      #         owner,
+      #         repo,
+      #         pull_number: number,
+      #         reviewers: ['DeevineFayvour'],
+      #       });
 
-             console.log('Waiting for approval...');
-            await octokit.rest.pulls.checkIfMerged({
-              owner,
-              repo,
-              pull_number: number,
-            });
+      #        console.log('Waiting for approval...');
+      #       await octokit.rest.pulls.checkIfMerged({
+      #         owner,
+      #         repo,
+      #         pull_number: number,
+      #       });
 
       - name: Bump Version and Create Release
         run: |
