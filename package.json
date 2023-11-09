@@ -1,6 +1,6 @@
 {
   "name": "testrunaplus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "mine",
   "main": "app.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "keywords": [],
   "dependencies": {
     "package-lock.json": "^1.0.0"
+  },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
   }
 }
