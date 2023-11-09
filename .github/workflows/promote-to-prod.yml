@@ -67,9 +67,10 @@
 name: Production CI
 
 on:
-  push:
+  pull_request:
     branches:
-      - main 
+      - 'develop'
+      - 'main'
 
 jobs:
   build:
@@ -93,5 +94,8 @@ jobs:
         run: |
           # Your code to publish artifacts to the prod repository
           # echo "Publishing artifacts to prod repository"
-          aws codeartifact login --tool npm --for-prod --domain testrundomain
+          aws codeartifact login --tool npm --repository for-prod --domain testrundomain
+          npm install
           npm publish
+
+

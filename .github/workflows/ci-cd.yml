@@ -44,8 +44,9 @@ name: Development CI
 on:
   pull_request:
     branches:
-      - develop
-      
+      - '*'
+      - 'develop'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -53,6 +54,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
 
           # Set up AWS CLI with your CodeArtifact credentials
       - name: Configure AWS credentials
@@ -66,7 +72,7 @@ jobs:
 
       - name: Publish to dev repository
         run: |
-          echo "Publishing artifacts to dev repository"
           aws codeartifact login --tool npm --repository for-dev --domain testrundomain
+          npm install
           npm publish
           # Your code to publish artifacts to the dev repository
