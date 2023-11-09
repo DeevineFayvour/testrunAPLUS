@@ -69,7 +69,8 @@ name: Production CI
 on:
   pull_request:
     branches:
-      - main 
+      - 'develop'
+      - 'main'
 
 jobs:
   build:
