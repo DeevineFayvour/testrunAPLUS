@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  build-and-publish-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build and Test
+        run: npm run build && npm test
+
+      - name: Determine Target Repository
+        id: determine-repo
+        run: echo "::set-output name=repo::${{ 'for-dev' }}"
+
+      - name: Bump Version for Dev
+        run: npx standard-version --prerelease dev
+
+      - name: Publish to CodeArtifact (Dev)
+        run: |
+          aws codeartifact login --tool npm --repository for-dev --domain testrundomain
+          npm publish
