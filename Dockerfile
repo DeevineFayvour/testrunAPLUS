@@ -12,3 +12,6 @@ COPY . .
 EXPOSE 3000
 
 CMD ["npm", "start"]
+
+
+# since node is usually the primary runtime application

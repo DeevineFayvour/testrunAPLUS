@@ -35,7 +35,73 @@
 #           docker push your-ecr-registry-uri/your-repo-name:${{ github.sha }}
 
 
-name: CI/CD with ECR and CodeArtifact
+# name: CI/CD with ECR and CodeArtifact
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Set up AWS CLI
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: us-east-1
+
+
+#       # - name: Login to ECR
+#       #   id: login-ecr
+#       #   uses: aws-actions/amazon-ecr-login@V2
+
+#       # - name: Build, tag and push the image to AWS ECR
+#       #   id: build-image
+#       #   env:
+#       #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#       #     ECR_REPOSITORY: ${{ secret.REPO_NAME }}
+#       #     IMAGE_TAG: latest
+#       #   run:
+#       #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#       #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+#       # - name: Login to AWS ECR
+#       #   uses: aws-actions/amazon-ecr-login@v2
+#       #   with:
+#       #     registry: 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun
+
+#       # - name: Build and push Docker image to ECR
+#       #   run: |
+#       #     docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0 .
+#       #     docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0
+
+#       # - name: Login to Amazon ECR
+#       #   id: login-ecr
+#       #   uses: aws-actions/amazon-ecr-login@v1
+
+#       # - name: Build, tag, and push image to Amazon ECR
+#       #   run: |
+#       #     docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
+#       #     docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
+
+
+#       - name: Configure CodeArtifact authentication
+#         run: |
+#           aws codeartifact login --tool npm --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
+
+#       - name: Install dependencies from CodeArtifact
+#         run: npm install
+
+
+name: Multi-Language Package Publish
 
 on:
   push:
@@ -43,11 +109,11 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Set up AWS CLI
@@ -57,45 +123,57 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      # Python
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
 
-      # - name: Login to ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@V2
+      - name: Install Python Dependencies
+        run: pip install wheel twine
 
-      # - name: Build, tag and push the image to AWS ECR
-      #   id: build-image
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ secret.REPO_NAME }}
-      #     IMAGE_TAG: latest
-      #   run:
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Build Python Package
+        run: python setup.py sdist
 
-
-      # - name: Login to AWS ECR
-      #   uses: aws-actions/amazon-ecr-login@v2
-      #   with:
-      #     registry: 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun
-
-      # - name: Build and push Docker image to ECR
-      #   run: |
-      #     docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0 .
-      #     docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun/testrun:1.0
-
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
-
-      # - name: Build, tag, and push image to Amazon ECR
-      #   run: |
-      #     docker build -t 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
-      #     docker push 743654950455.dkr.ecr.us-east-1.amazonaws.com/testrun:1.0
-
-
-      - name: Configure CodeArtifact authentication
+      - name: AWS CodeArtifact login (Python)
         run: |
-          aws codeartifact login --tool npm --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
+          aws codeartifact login --tool twine --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
+      
+      - name: Publish Python Package
+        run: twine upload --repository codeartifact dist/*
 
-      - name: Install dependencies from CodeArtifact
+      # Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install Node.js Dependencies
         run: npm install
+
+      - name: AWS CodeArtifact login (Node.js) and publishing 
+        run: |
+          aws codeartifact login --tool npm --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }}
+          npm publish
+
+      - name: Publish Node.js Package
+        run: npm publish
+
+      # # C#
+      # - name: Set up .NET
+      #   uses: actions/setup-dotnet@v1
+      #   with:
+      #     dotnet-version: 5.0
+
+      # - name: Build C# Package
+      #   run: dotnet build -c Release
+
+      # - name: Pack C# Package
+      #   run: dotnet pack -c Release
+
+      # - name: AWS CodeArtifact login (C#)
+      #   run: |
+      #     aws codeartifact login --tool nuget --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }}
+        
+      # - name: Publish C# Package
+      #   run: dotnet nuget push **/*.nupkg --source "aws-codeartifact://${{ secrets.CODEARTIFACT_DOMAIN }}/my_csharp_repo" --api-key ${{ secrets.AWS_CODEARTIFACT_API_KEY }}

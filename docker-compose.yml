@@ -1,0 +1,16 @@
+version: '3'
+services:
+  nodejs:
+    build: ./nodejs
+    ports:
+      - "3000:3000"
+
+  python:
+    build: ./python
+    ports:
+      - "5000:5000"
+
+  csharp:
+    build: ./csharp
+    ports:
+      - "8000:8000"  # Adjust the port number based on your C# application
