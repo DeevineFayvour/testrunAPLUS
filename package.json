@@ -1,6 +1,6 @@
 {
   "name": "testrunaplus",
-  "version": "1.0.3",
+  "version": "1.0.1",
   "description": "mine",
   "main": "app.js",
   "scripts": {
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/DeevineFayvour/testrunAPLUS#readme",
   "keywords": [],
   "dependencies": {
+    "arrify": "^3.0.0",
     "package-lock.json": "^1.0.0"
   },
   "devDependencies": {

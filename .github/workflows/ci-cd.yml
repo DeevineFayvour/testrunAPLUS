@@ -44,7 +44,8 @@ name: Development CI
 on:
   pull_request:
     branches:
-      - develop
+      - '*'
+      - 'develop'
 
 jobs:
   build:
