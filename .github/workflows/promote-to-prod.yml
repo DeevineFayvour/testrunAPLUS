@@ -95,5 +95,6 @@ jobs:
           # echo "Publishing artifacts to prod repository"
           aws codeartifact login --tool npm --repository --for-prod --domain testrundomain
           npm install
+          npm publish
 
 
