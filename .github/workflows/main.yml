@@ -123,24 +123,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Python
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
+      # # Python
+      # - name: Set up Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.9
 
-      - name: Install Python Dependencies
-        run: pip install wheel twine
+      # - name: Install Python Dependencies
+      #   run: |
+      #     pip install wheel twine
 
-      - name: Build Python Package
-        run: python setup.py sdist
+      # - name: Build Python Package
+      #   run: |
+      #     python setup.py sdist
 
-      - name: AWS CodeArtifact login (Python)
-        run: |
-          aws codeartifact login --tool twine --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
+      # - name: AWS CodeArtifact login (Python)
+      #   run: |
+      #     aws codeartifact login --tool twine --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }} --domain ${{ secrets.CODEARTIFACT_DOMAIN }}
       
-      - name: Publish Python Package
-        run: twine upload --repository codeartifact dist/*
+      # - name: Publish Python Package
+      #   run: |
+      #     twine upload --repository codeartifact dist/*
 
       # Node.js
       - name: Set up Node.js
@@ -151,13 +154,14 @@ jobs:
       - name: Install Node.js Dependencies
         run: npm install
 
-      - name: AWS CodeArtifact login (Node.js) and publishing 
+      - name: AWS CodeArtifact login (Node.js) 
         run: |
           aws codeartifact login --tool npm --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --repository ${{ secrets.CODEARTIFACT_REPO }}
-          npm publish
+          
 
       - name: Publish Node.js Package
-        run: npm publish
+        run: |
+          npm publish
 
       # # C#
       # - name: Set up .NET
