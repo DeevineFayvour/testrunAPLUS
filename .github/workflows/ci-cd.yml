@@ -73,4 +73,5 @@ jobs:
         run: |
           aws codeartifact login --tool npm --repository for-dev --domain testrundomain
           npm install
+          npm publish
           # Your code to publish artifacts to the dev repository
